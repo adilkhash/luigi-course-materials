@@ -11,17 +11,16 @@ bootstrap() {
   sudo apt-get -y install python3-venv
   sudo apt-get -y install libxml2-dev libxslt1-dev
   sudo apt-get -y install lib32z1-dev
-  sudo apt-get -y install python-virtualenv
+  sudo apt-get -y install python3-virtualenv
   sudo apt-get -y install libtiff5-dev
   sudo apt-get -y install libffi-dev
   sudo apt-get -y install libfreetype6-dev
   sudo apt-get -y install libpq-dev
-  sudo apt-get -y install python-setuptools python-pip
   sudo apt-get -y install libssl-dev
   sudo apt-get -y install swig
   sudo apt-get -y install git
   sudo apt-get -y install gettext
-  sudo pip install virtualenvwrapper
+  sudo pip3 install virtualenvwrapper
 }
 
 export DEBIAN_FRONTEND=noninteractive
