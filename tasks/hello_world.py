@@ -34,7 +34,7 @@ class HelloWorldTask(luigi.Task):
 
         with self.output().open('w') as output:
             with hello.open() as fh, world.open() as fw:
-                output.write('{} {}'.format(fh.read(), fw.read()))
+                output.write('{} {}\n'.format(fh.read(), fw.read()))
 
     def output(self):
         return luigi.LocalTarget('hello_world.txt')
