@@ -7,7 +7,7 @@ import pandas as pd
 from luigi.contrib.postgres import CopyToTable
 
 
-def get_filename(year, month):
+def get_filename(year: int, month: int) -> str:
     return f'yellow_tripdata_{year}-{month:02}.csv'
 
 
@@ -31,7 +31,7 @@ class DownloadTaxiTripTask(luigi.Task):
                 f.write('{}\n'.format(chunk.decode('utf-8')))
 
     def output(self):
-        return luigi.LocalTarget(os.path.join('data', self.filename))
+        return luigi.LocalTarget(os.path.join('yellow-taxi-data', self.filename))
 
 
 class AggregateTaxiTripTask(luigi.Task):
@@ -52,7 +52,7 @@ class AggregateTaxiTripTask(luigi.Task):
 
     def output(self):
         filename = get_filename(self.year, self.month)[:-4]
-        return luigi.LocalTarget(os.path.join('data', f'{filename}-agg.csv'))
+        return luigi.LocalTarget(os.path.join('yellow-taxi-data', f'{filename}-agg.csv'))
 
 
 class CopyTaxiTripData(CopyToTable):
