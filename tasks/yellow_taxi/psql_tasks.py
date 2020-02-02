@@ -11,20 +11,25 @@ def get_filename(year: int, month: int) -> str:
     return f'yellow_tripdata_{year}-{month:02}.csv'
 
 
+def download_dataset(filename: str) -> requests.Response:
+    url = f'https://s3.amazonaws.com/nyc-tlc/trip+data/{filename}'
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+    return response
+
+
 class DownloadTaxiTripTask(luigi.Task):
     year = luigi.IntParameter()
     month = luigi.IntParameter()
 
     @property
     def filename(self):
-        return f'yellow_tripdata_{self.year}-{self.month:02}.csv'
+        return get_filename(self.year, self.month)
 
     def run(self):
-        url = f'https://s3.amazonaws.com/nyc-tlc/trip+data/{self.filename}'
 
         self.output().makedirs()  # in case path does not exist
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
+        response = download_dataset(self.filename)
 
         with self.output().open(mode='w') as f:
             for chunk in response.iter_lines():
