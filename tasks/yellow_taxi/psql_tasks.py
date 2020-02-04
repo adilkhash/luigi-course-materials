@@ -1,5 +1,6 @@
 import os
 import csv
+from typing import List
 
 import luigi
 import requests
@@ -18,6 +19,19 @@ def download_dataset(filename: str) -> requests.Response:
     return response
 
 
+def group_by_pickup_date(
+    file_object, group_by='pickup_date', metrics: List[str] = None
+) -> pd.DataFrame:
+    if metrics is None:
+        metrics = ['tip_amount', 'total_amount']
+
+    df = pd.read_csv(file_object)
+    df['tpep_pickup_datetime'] = pd.to_datetime(df['tpep_pickup_datetime'])
+    df['pickup_date'] = df['tpep_pickup_datetime'].dt.strftime('%Y-%m-%d')
+    df = df.groupby(group_by)[metrics].sum().reset_index()
+    return df
+
+
 class DownloadTaxiTripTask(luigi.Task):
     year = luigi.IntParameter()
     month = luigi.IntParameter()
@@ -27,7 +41,6 @@ class DownloadTaxiTripTask(luigi.Task):
         return get_filename(self.year, self.month)
 
     def run(self):
-
         self.output().makedirs()  # in case path does not exist
         response = download_dataset(self.filename)
 
@@ -48,16 +61,15 @@ class AggregateTaxiTripTask(luigi.Task):
 
     def run(self):
         with self.input().open() as input, self.output().open('w') as output:
-            df = pd.read_csv(input)
-            df['tpep_pickup_datetime'] = pd.to_datetime(df['tpep_pickup_datetime'])
-            df['pickup_date'] = df['tpep_pickup_datetime'].dt.strftime('%Y-%m-%d')
-            df = df.groupby('pickup_date')['tip_amount', 'total_amount'].sum().reset_index()
             self.output().makedirs()
+            df = group_by_pickup_date(input)
             df.to_csv(output, index=False)
 
     def output(self):
         filename = get_filename(self.year, self.month)[:-4]
-        return luigi.LocalTarget(os.path.join('yellow-taxi-data', f'{filename}-agg.csv'))
+        return luigi.LocalTarget(
+            os.path.join('yellow-taxi-data', f'{filename}-agg.csv')
+        )
 
 
 class CopyTaxiTripData(CopyToTable):
