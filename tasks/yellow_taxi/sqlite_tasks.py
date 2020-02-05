@@ -1,15 +1,13 @@
 import pandas as pd
-from luigi import IntParameter
 from luigi.contrib.sqla import CopyToTable
 from sqlalchemy import Numeric, Date
+from luigi.util import requires
 
 from tasks.yellow_taxi.psql_tasks import AggregateTaxiTripTask
 
 
+@requires(AggregateTaxiTripTask)
 class CopyTaxiTripData2SQLite(CopyToTable):
-    year = IntParameter()
-    month = IntParameter()
-
     table = 'nyc_trip_agg_data'
     connection_string = 'sqlite:///sqlite.db'
 
