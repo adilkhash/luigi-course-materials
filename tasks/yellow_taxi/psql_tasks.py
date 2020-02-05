@@ -6,6 +6,7 @@ import luigi
 import requests
 import pandas as pd
 from luigi.contrib.postgres import CopyToTable
+from luigi.util import requires
 
 
 def get_filename(year: int, month: int) -> str:
@@ -52,12 +53,8 @@ class DownloadTaxiTripTask(luigi.Task):
         return luigi.LocalTarget(os.path.join('yellow-taxi-data', self.filename))
 
 
+@requires(DownloadTaxiTripTask)
 class AggregateTaxiTripTask(luigi.Task):
-    year = luigi.IntParameter()
-    month = luigi.IntParameter()
-
-    def requires(self):
-        return DownloadTaxiTripTask(year=self.year, month=self.month)
 
     def run(self):
         with self.input().open() as input, self.output().open('w') as output:
@@ -72,10 +69,8 @@ class AggregateTaxiTripTask(luigi.Task):
         )
 
 
+@requires(AggregateTaxiTripTask)
 class CopyTaxiTripData(CopyToTable):
-    year = luigi.IntParameter()
-    month = luigi.IntParameter()
-
     host = 'localhost'
     user = 'luigi'
     database = 'luigi_demo'
