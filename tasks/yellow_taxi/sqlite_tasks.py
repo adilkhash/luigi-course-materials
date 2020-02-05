@@ -17,9 +17,6 @@ class CopyTaxiTripData2SQLite(CopyToTable):
         (['total_amount', Numeric(2)], {}),
     ]
 
-    def requires(self):
-        return AggregateTaxiTripTask(year=self.year, month=self.month)
-
     def rows(self):
         with self.input().open() as csv_file:
             # use pandas not to deal with type conversions

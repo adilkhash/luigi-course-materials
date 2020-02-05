@@ -84,9 +84,6 @@ class CopyTaxiTripData(CopyToTable):
         ('total_amount', 'numeric'),
     ]
 
-    def requires(self):
-        return AggregateTaxiTripTask(year=self.year, month=self.month)
-
     def rows(self):
         with self.input().open() as csv_file:
             reader = csv.DictReader(csv_file)
