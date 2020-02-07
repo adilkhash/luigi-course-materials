@@ -34,12 +34,11 @@ def group_by_pickup_date(
 
 
 class DownloadTaxiTripTask(luigi.Task):
-    year = luigi.IntParameter()
-    month = luigi.IntParameter()
+    date = luigi.MonthParameter()
 
     @property
     def filename(self):
-        return get_filename(self.year, self.month)
+        return get_filename(self.date.year, self.date.month)
 
     def run(self):
         self.output().makedirs()  # in case path does not exist
@@ -63,7 +62,7 @@ class AggregateTaxiTripTask(luigi.Task):
             df.to_csv(output, index=False)
 
     def output(self):
-        filename = get_filename(self.year, self.month)[:-4]
+        filename = get_filename(self.date.year, self.date.month)[:-4]
         return luigi.LocalTarget(
             os.path.join('yellow-taxi-data', f'{filename}-agg.csv')
         )
