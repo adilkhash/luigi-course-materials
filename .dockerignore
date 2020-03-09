@@ -1,0 +1,10 @@
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.env
+.Python
+.python-version
+Dockerfile
+build/*
+.pytest_cache/*
