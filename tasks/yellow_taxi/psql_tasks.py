@@ -91,4 +91,4 @@ class CopyTaxiTripData(CopyToTable):
 
     @property
     def update_id(self):
-        return get_filename(self.year, self.month)
+        return get_filename(self.date.year, self.date.month)
