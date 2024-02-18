@@ -11,3 +11,5 @@ WORKDIR /code
 COPY tasks /code/tasks
 COPY telegram_notify.py /code
 COPY luigi.cfg /code
+
+CMD ["luigid"]
